@@ -30,6 +30,40 @@ public class LoadModelRenderer extends Renderer implements IAsyncLoaderCallback 
     private Cube mBaseObject;
     private Animation3D mCameraAnim, mLightAnim;
 
+    private static final int MIN_Z = 10;
+
+    private static final int MAX_Z = 35;
+
+    private float lastK;
+
+    public void setZ(float k) {
+        k = k - 1;
+//        k = k * -1;
+        k = Math.max(-5, Math.min(5, k)); // k from -1 to 1.
+
+        k = k / 2.75f;
+
+        double currentZ = getCurrentCamera().getZ() - ((MAX_Z - MIN_Z) * (k - lastK));
+        lastK = k;
+        currentZ = Math.max(MIN_Z, Math.min(MAX_Z, currentZ));
+        Log.i("App ctrl", "setZ: " + k + " > " + currentZ);
+        getCurrentCamera().setZ(currentZ);
+
+    }
+
+    public void resetLastK() {
+        lastK = 0;
+    }
+
+    private float rot;
+
+    public void rotate(float k) {
+        k = k / 100f;
+        rot += k;
+        rot %= 360;
+        _Object3D.rotate(Vector3.Axis.Y, rot);
+    }
+
     public LoadModelRenderer(Context context) {
         super(context);
     }
@@ -41,6 +75,7 @@ public class LoadModelRenderer extends Renderer implements IAsyncLoaderCallback 
 
         getCurrentScene().addLight(mLight);
         getCurrentCamera().setZ(16);
+        getCurrentCamera().setX(-0.65);
 
         getCurrentScene().setBackgroundColor(0.7f, 0.7f, 0.7f, 1.0f);
 
@@ -52,14 +87,14 @@ public class LoadModelRenderer extends Renderer implements IAsyncLoaderCallback 
             material.addTexture(new Texture("camdenTown", R.drawable.earthtruecolor_nasa_big));
             material.setColorInfluence(0);
             mBaseObject.setMaterial(material);
-            getCurrentScene().addChild(mBaseObject);
+          //  getCurrentScene().addChild(mBaseObject);
         } catch (ATexture.TextureException e) {
             e.printStackTrace();
         }
 
         //Begin loading
         final LoaderOBJ loaderOBJ = new LoaderOBJ(mContext.getResources(),
-                mTextureManager, R.raw.negev_obj);
+                mTextureManager, R.raw.newobj);
         loadModel(loaderOBJ, this, R.raw.negev_obj);
 
         mLightAnim = new EllipticalOrbitAnimation3D(new Vector3(),
@@ -74,22 +109,37 @@ public class LoadModelRenderer extends Renderer implements IAsyncLoaderCallback 
         mLightAnim.play();
     }
 
+    private Object3D _Object3D;
+
     @Override
     public void onModelLoadComplete(ALoader aLoader) {
         Log.d("Basic", "Model load complete: " + aLoader);
         final LoaderOBJ obj = (LoaderOBJ) aLoader;
-        final Object3D parsedObject = obj.getParsedObject();
-        parsedObject.setPosition(Vector3.ZERO);
-        getCurrentScene().addChild(parsedObject);
+        _Object3D = obj.getParsedObject();
 
-        mCameraAnim = new RotateOnAxisAnimation(Vector3.Axis.Y, 360);
+        try {
+            Material material = new Material();
+            material.addTexture(new Texture("camdenTown", R.drawable.bratatat));
+            material.setColorInfluence(0);
+            _Object3D.setMaterial(material);
+            //  getCurrentScene().addChild(mBaseObject);
+        } catch (ATexture.TextureException e) {
+            e.printStackTrace();
+        }
+
+        _Object3D.setPosition(Vector3.ZERO);
+        getCurrentScene().addChild(_Object3D);
+
+
+
+      /*  mCameraAnim = new RotateOnAxisAnimation(Vector3.Axis.Y, 360);
         mCameraAnim.setDurationMilliseconds(8000);
         mCameraAnim.setRepeatMode(Animation.RepeatMode.INFINITE);
-        mCameraAnim.setTransformable3D(parsedObject);
+        mCameraAnim.setTransformable3D(parsedObject);*/
 
-        getCurrentScene().registerAnimation(mCameraAnim);
+//        getCurrentScene().registerAnimation(mCameraAnim);
 
-        mCameraAnim.play();
+//        mCameraAnim.play();
     }
 
     @Override

@@ -50,14 +50,14 @@ public class BasicRenderer extends Renderer implements IAsyncLoaderCallback {
         getCurrentScene().addLight(_DirectionalLight);*/
 
         //Begin loading
-        final LoaderOBJ loaderOBJ = new LoaderOBJ(_Context.getResources(), mTextureManager, R.raw.dual_berettas_obj);
-        loadModel(loaderOBJ, this, R.raw.dual_berettas_obj);
+        final LoaderOBJ loaderOBJ = new LoaderOBJ(_Context.getResources(), mTextureManager, R.raw.newobj);
+        loadModel(loaderOBJ, this, R.raw.newobj);
 
-        Material material = new Material();
+        /*Material material = new Material();
         material.enableLighting(false);
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
         material.setColorInfluence(0);
-        Texture earthTexture = new Texture("Earth", R.drawable.earthtruecolor_nasa_big);
+        Texture earthTexture = new Texture("Earth", R.drawable.bratatat);
         try{
             material.addTexture(earthTexture);
         } catch (ATexture.TextureException error){
@@ -68,7 +68,7 @@ public class BasicRenderer extends Renderer implements IAsyncLoaderCallback {
         _EarthSphere.setMaterial(material);
 //        getCurrentScene().addChild(_EarthSphere);
         getCurrentCamera().setFarPlane(1000);
-        getCurrentCamera().setZ(10.2f);
+        getCurrentCamera().setZ(10.2f);*/
 
         try {
             getCurrentScene().setSkybox(R.drawable.posx, R.drawable.negx,
@@ -112,18 +112,14 @@ public class BasicRenderer extends Renderer implements IAsyncLoaderCallback {
     public void onModelLoadComplete(ALoader loader) {
         Log.d(TAG, "onModelLoadComplete: " + loader.toString());
         LoaderOBJ obj = null;
-        try {
-            obj = (LoaderOBJ) loader.parse();
-        } catch (ParsingException e) {
-            e.printStackTrace();
-        }
+        obj = (LoaderOBJ) loader;
         _Object3D = obj.getParsedObject();
 
         Material material = new Material();
         material.enableLighting(true);
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
         material.setColorInfluence(0.5f);
-        Texture earthTexture = new Texture("Sawed-off", R.drawable.earthtruecolor_nasa_big);
+        Texture earthTexture = new Texture("Sawed-off", R.drawable.bratatat);
         try{
             material.addTexture(earthTexture);
             Log.d(TAG, "onModelLoadComplete: Material installed!");
